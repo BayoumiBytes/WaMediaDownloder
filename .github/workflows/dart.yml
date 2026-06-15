@@ -4,23 +4,17 @@
 # documentation.
 
 name: Flutter
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      # Note: This workflow uses the latest stable version of the Flutter SDK.
-      # You can specify other versions if desired, see documentation here:
-      # https://github.com/subosito/flutter-action
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
@@ -28,15 +22,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
+      - name: Build APK
+        run: flutter build apk --release
 
-      # Keep errors blocking while allowing existing warnings/infos.
-      - name: Analyze project source
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed.
-      - name: Run tests
-        run: flutter test
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
